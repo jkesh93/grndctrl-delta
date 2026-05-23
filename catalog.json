@@ -1,6 +1,6 @@
 {
   "catalog_version": "1.0",
-  "updated": "2026-05-22",
+  "updated": "2026-05-23",
   "description": "Ground support packages, tools, modules, workflows, and agents for GroundControl.",
   "packages": [
     {
@@ -9,13 +9,36 @@
       "description": "Manage Entra ID users and groups via Microsoft Graph. Supports 14 operations across users and groups including list, get, create, update, disable, delete, and CSV export. Requires Microsoft.Graph PowerShell modules and a configured service principal profile or an interactive Graph session.",
       "version": "1.0.0",
       "type": "powershell",
-      "tags": ["azure", "entra", "identity", "users", "groups", "graph"],
-      "scripts": ["packages/azure_admin/azure_admin.ps1"],
-      "dependencies": ["modules/gc_graph_connect.ps1"],
+      "tags": [
+        "azure",
+        "entra",
+        "identity",
+        "users",
+        "groups",
+        "graph"
+      ],
+      "scripts": [
+        "packages/azure_admin/azure_admin.ps1"
+      ],
+      "dependencies": [
+        "modules/gc_graph_connect.ps1"
+      ],
       "config_requirements": [
-        { "key": "GC_AZURE_TENANT_ID",            "secret": false, "description": "Azure tenant ID (GUID)." },
-        { "key": "GC_AZURE_CLIENT_ID",            "secret": false, "description": "Service principal client ID." },
-        { "key": "GC_AZURE_CLIENT_SECRET",        "secret": true,  "description": "Service principal client secret." }
+        {
+          "key": "GC_AZURE_TENANT_ID",
+          "secret": false,
+          "description": "Azure tenant ID (GUID)."
+        },
+        {
+          "key": "GC_AZURE_CLIENT_ID",
+          "secret": false,
+          "description": "Service principal client ID."
+        },
+        {
+          "key": "GC_AZURE_CLIENT_SECRET",
+          "secret": true,
+          "description": "Service principal client secret."
+        }
       ],
       "actions_count": 14,
       "manifest": "packages/azure_admin/package.json"
@@ -26,9 +49,14 @@
       "description": "A minimal example package demonstrating the grndctrl-delta structure. Useful as a template for new packages.",
       "version": "1.0.0",
       "type": "powershell",
-      "tags": ["example", "template"],
+      "tags": [
+        "example",
+        "template"
+      ],
       "author": "",
-      "scripts": ["packages/hello_world/hello_world.ps1"],
+      "scripts": [
+        "packages/hello_world/hello_world.ps1"
+      ],
       "dependencies": [],
       "config": {},
       "actions": [
@@ -37,6 +65,49 @@
           "function": "Invoke-SayHello",
           "description": "Returns a greeting for the given name.",
           "interactive": false
+        }
+      ]
+    },
+    {
+      "id": "configure-sites-selected-pnp",
+      "name": "Configure Sites Selected PnP",
+      "description": "Grants an Entra ID app registration Sites.Selected access to a single SharePoint Online site using PnP.PowerShell. Use this when an app already has Microsoft Graph Sites.Selected application permission and admin consent, and needs scoped access to one site.",
+      "version": "1.0.0",
+      "tags": [
+        "sharepoint",
+        "pnp-powershell",
+        "entra",
+        "microsoft-graph",
+        "sites-selected",
+        "m365"
+      ],
+      "scripts": [
+        "packages/configure-sites-selected-pnp/configure_sites_selected_pnp.ps1"
+      ],
+      "manifest": "packages/configure-sites-selected-pnp/manifest.json",
+      "actions": [
+        {
+          "name": "configure_sites_selected_access",
+          "description": "Grant a target Entra app registration Read, Write, Manage, or FullControl access to a specified SharePoint Online site through an interactive PnP.PowerShell admin sign-in. Call this when configuring least-privilege selected-site access for an app that already has Graph Sites.Selected application permission and admin consent."
+        }
+      ],
+      "dependencies": [],
+      "config_requirements": [
+        {
+          "key": "GC_AZURE_TENANT_ID",
+          "description": "The ID of the Azure AD tenant to connect to."
+        },
+        {
+          "key": "GC_AZURE_CLIENT_ID",
+          "description": "The client ID of the service principal used for authentication."
+        },
+        {
+          "key": "GC_AZURE_CLIENT_SECRET",
+          "description": "The client secret of the service principal used for authentication."
+        },
+        {
+          "key": "GC_AZURE_CLIENT_CERTIFICATE_PATH",
+          "description": "Path to the certificate used for service principal authentication."
         }
       ]
     }
@@ -63,9 +134,17 @@
       "name": "Daily File Summary",
       "description": "Scans the reports folder each morning for new files and writes a structured summary to outputs/. A starter example showing scheduled workflow structure.",
       "version": "1.0.0",
-      "tags": ["example", "files", "reporting"],
-      "trigger": "scheduled — weekdays 08:00",
-      "tools_required": ["list_files", "read_file", "write_file"],
+      "tags": [
+        "example",
+        "files",
+        "reporting"
+      ],
+      "trigger": "scheduled \u2014 weekdays 08:00",
+      "tools_required": [
+        "list_files",
+        "read_file",
+        "write_file"
+      ],
       "path": "workflows/daily_file_summary/workflow.json"
     }
   ],
@@ -75,10 +154,16 @@
       "name": "File Ops Agent",
       "description": "A minimal agent with read/write file permissions. Good starting point for workflows that process local files.",
       "version": "1.0.0",
-      "tags": ["example", "files"],
-      "tools": ["list_files", "read_file", "write_file"],
+      "tags": [
+        "example",
+        "files"
+      ],
+      "tools": [
+        "list_files",
+        "read_file",
+        "write_file"
+      ],
       "path": "agents/file_ops_agent/agent.json"
     }
   ]
 }
-

@@ -1,0 +1,60 @@
+{
+  "catalog_version": "1.0",
+  "updated": "2026-05-22",
+  "description": "Ground support packages, tools, modules, workflows, and agents for GroundControl.",
+  "packages": [
+    {
+      "id": "hello_world",
+      "name": "Hello World",
+      "description": "A minimal example package demonstrating the grndctrl-delta structure. Useful as a template for new packages.",
+      "version": "1.0.0",
+      "type": "powershell",
+      "tags": ["example", "template"],
+      "author": "",
+      "scripts": ["packages/hello_world/hello_world.ps1"],
+      "dependencies": [],
+      "config": {},
+      "actions": [
+        {
+          "name": "say_hello",
+          "function": "Invoke-SayHello",
+          "description": "Returns a greeting for the given name.",
+          "interactive": false
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "gc_logging",
+      "name": "GC Logging",
+      "description": "Shared structured logging helpers used by all packages. Writes JSON log entries to the GroundControl log path.",
+      "path": "modules/gc_logging.ps1",
+      "version": "1.0.0"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "daily_file_summary",
+      "name": "Daily File Summary",
+      "description": "Scans the reports folder each morning for new files and writes a structured summary to outputs/. A starter example showing scheduled workflow structure.",
+      "version": "1.0.0",
+      "tags": ["example", "files", "reporting"],
+      "trigger": "scheduled — weekdays 08:00",
+      "tools_required": ["list_files", "read_file", "write_file"],
+      "path": "workflows/daily_file_summary/workflow.json"
+    }
+  ],
+  "agents": [
+    {
+      "id": "file_ops_agent",
+      "name": "File Ops Agent",
+      "description": "A minimal agent with read/write file permissions. Good starting point for workflows that process local files.",
+      "version": "1.0.0",
+      "tags": ["example", "files"],
+      "tools": ["list_files", "read_file", "write_file"],
+      "path": "agents/file_ops_agent/agent.json"
+    }
+  ]
+}
+

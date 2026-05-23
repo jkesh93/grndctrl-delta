@@ -1,0 +1,28 @@
+{
+  "id": "hello_world",
+  "name": "Hello World",
+  "description": "A minimal example package demonstrating the grndctrl-delta structure. Useful as a template for new packages.",
+  "version": "1.0.0",
+  "type": "powershell",
+  "tags": ["example", "template"],
+  "author": "",
+  "scripts": ["hello_world.ps1"],
+  "dependencies": [],
+  "config": {},
+  "actions": [
+    {
+      "name": "say_hello",
+      "function": "Invoke-SayHello",
+      "description": "Returns a greeting for the given name.",
+      "parameters": [
+        {
+          "name": "target_name",
+          "ps_name": "Name",
+          "type": "string",
+          "description": "The name to greet.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

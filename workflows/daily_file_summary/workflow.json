@@ -1,0 +1,42 @@
+{
+  "id": "daily_file_summary",
+  "name": "Daily File Summary",
+  "description": "Scans the reports folder each morning for new files and writes a structured summary to outputs/. A starter example showing scheduled workflow structure.",
+  "version": "1.0.0",
+  "trigger": {
+    "type": "scheduled",
+    "cron": "0 8 * * 1-5",
+    "description": "Weekdays at 08:00"
+  },
+  "agent_id": null,
+  "tags": ["example", "files", "reporting"],
+  "author": "",
+  "steps": [
+    {
+      "id": "s1",
+      "action": "tool_call",
+      "tool": "list_files",
+      "description": "List files in the reports folder",
+      "args": { "path": "reports/" },
+      "interactive": false
+    },
+    {
+      "id": "s2",
+      "action": "tool_call",
+      "tool": "read_file",
+      "description": "Read each discovered file",
+      "depends_on": "s1",
+      "interactive": false
+    },
+    {
+      "id": "s3",
+      "action": "tool_call",
+      "tool": "write_file",
+      "description": "Write the summary to outputs/",
+      "depends_on": "s2",
+      "interactive": false
+    }
+  ],
+  "tools_required": ["list_files", "read_file", "write_file"],
+  "spec_file": null
+}

@@ -1,0 +1,12 @@
+{
+  "id": "file_ops_agent",
+  "name": "File Ops Agent",
+  "description": "A minimal agent with read/write file permissions. Good starting point for workflows that process local files. Carry no sensitive config — safe to share publicly.",
+  "version": "1.0.0",
+  "tags": ["example", "files"],
+  "author": "",
+  "tools": ["list_files", "read_file", "write_file"],
+  "reference_materials": [],
+  "config_profiles": {},
+  "created": "2026-05-22"
+}

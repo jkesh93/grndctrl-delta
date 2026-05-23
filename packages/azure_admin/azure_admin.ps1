@@ -101,32 +101,52 @@ function Ensure-GraphConnection {
 
     if ($context) { return }
 
-    # Service principal auth via config profile env vars (preferred for agentic use).
+    # Service principal auth via config profile env vars (preferred for unattended / agentic use).
     $tenantId = $env:GC_AZURE_TENANT_ID
     $clientId = $env:GC_AZURE_CLIENT_ID
     $secret   = $env:GC_AZURE_CLIENT_SECRET
     $certPath = $env:GC_AZURE_CLIENT_CERTIFICATE_PATH
 
     if ($tenantId -and $clientId -and $secret) {
-        $secureSecret = ConvertTo-SecureString $secret -AsPlainText -Force
-        $credential   = New-Object System.Management.Automation.PSCredential($clientId, $secureSecret)
-        Connect-MgGraph -TenantId $tenantId -ClientSecretCredential $credential -NoWelcome | Out-Null
-        return
+        try {
+            $secureSecret = ConvertTo-SecureString $secret -AsPlainText -Force
+            $credential   = New-Object System.Management.Automation.PSCredential($clientId, $secureSecret)
+            Connect-MgGraph -TenantId $tenantId -ClientSecretCredential $credential -NoWelcome | Out-Null
+            return
+        } catch {
+            throw "Service principal (client secret) authentication failed: $($_.Exception.Message)"
+        }
     }
 
     if ($tenantId -and $clientId -and $certPath) {
         if (-not (Test-Path $certPath)) {
             throw "Certificate file not found at GC_AZURE_CLIENT_CERTIFICATE_PATH: $certPath"
         }
-        Connect-MgGraph -TenantId $tenantId -ClientId $clientId -CertificatePath $certPath -NoWelcome | Out-Null
-        return
+        try {
+            Connect-MgGraph -TenantId $tenantId -ClientId $clientId -CertificatePath $certPath -NoWelcome | Out-Null
+            return
+        } catch {
+            throw "Service principal (certificate) authentication failed: $($_.Exception.Message)"
+        }
     }
 
-    throw (
-        "Not connected to Microsoft Graph and no service principal credentials found. " +
-        "Options: (A) Set GC_AZURE_TENANT_ID, GC_AZURE_CLIENT_ID, and GC_AZURE_CLIENT_SECRET in a config profile. " +
-        "(B) Run operation 'connect_tenant' in an interactive terminal to authenticate with delegated permissions."
-    )
+    # Fall back to interactive browser auth.
+    # Uses MSAL token cache — silent if you have already signed in this session or previously
+    # via connect_tenant; opens a browser prompt if no valid cached token is found.
+    $defaultScopes = @("User.ReadWrite.All", "Group.ReadWrite.All", "Directory.Read.All")
+    try {
+        if ($tenantId) {
+            Connect-MgGraph -TenantId $tenantId -Scopes $defaultScopes -NoWelcome | Out-Null
+        } else {
+            Connect-MgGraph -Scopes $defaultScopes -NoWelcome | Out-Null
+        }
+    } catch {
+        throw (
+            "Interactive authentication failed: $($_.Exception.Message)`n" +
+            "To use service principal auth instead, set GC_AZURE_TENANT_ID, GC_AZURE_CLIENT_ID, " +
+            "and GC_AZURE_CLIENT_SECRET in a GroundControl config profile."
+        )
+    }
 }
 
 function Convert-ObjectForJson {

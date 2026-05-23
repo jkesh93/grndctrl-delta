@@ -4,6 +4,23 @@
   "description": "Ground support packages, tools, modules, workflows, and agents for GroundControl.",
   "packages": [
     {
+      "id": "azure_admin",
+      "name": "Azure / Entra ID Admin",
+      "description": "Manage Entra ID users and groups via Microsoft Graph. Supports 14 operations across users and groups including list, get, create, update, disable, delete, and CSV export. Requires Microsoft.Graph PowerShell modules and a configured service principal profile or an interactive Graph session.",
+      "version": "1.0.0",
+      "type": "powershell",
+      "tags": ["azure", "entra", "identity", "users", "groups", "graph"],
+      "scripts": ["packages/azure_admin/azure_admin.ps1"],
+      "dependencies": ["modules/gc_graph_connect.ps1"],
+      "config_requirements": [
+        { "key": "GC_AZURE_TENANT_ID",            "secret": false, "description": "Azure tenant ID (GUID)." },
+        { "key": "GC_AZURE_CLIENT_ID",            "secret": false, "description": "Service principal client ID." },
+        { "key": "GC_AZURE_CLIENT_SECRET",        "secret": true,  "description": "Service principal client secret." }
+      ],
+      "actions_count": 14,
+      "manifest": "packages/azure_admin/package.json"
+    },
+    {
       "id": "hello_world",
       "name": "Hello World",
       "description": "A minimal example package demonstrating the grndctrl-delta structure. Useful as a template for new packages.",
@@ -30,6 +47,13 @@
       "name": "GC Logging",
       "description": "Shared structured logging helpers used by all packages. Writes JSON log entries to the GroundControl log path.",
       "path": "modules/gc_logging.ps1",
+      "version": "1.0.0"
+    },
+    {
+      "id": "gc_graph_connect",
+      "name": "GC Graph Connect",
+      "description": "Shared Microsoft Graph authentication helper. Supports service principal auth via GC_AZURE_* env vars (client secret or certificate) with graceful fallback to an existing delegated session. Used by any package that calls Microsoft Graph APIs.",
+      "path": "modules/gc_graph_connect.ps1",
       "version": "1.0.0"
     }
   ],

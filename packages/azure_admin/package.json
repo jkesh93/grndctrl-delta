@@ -1,0 +1,365 @@
+{
+  "id": "azure_admin",
+  "name": "Azure / Entra ID Admin",
+  "description": "Manage Entra ID users and groups via Microsoft Graph. Supports listing, creating, updating, disabling, and deleting users and groups. Requires a configured service principal profile or an interactive Graph session.",
+  "version": "1.0.0",
+  "type": "powershell",
+  "tags": ["azure", "entra", "identity", "users", "groups", "graph"],
+  "author": "",
+  "scripts": ["packages/azure_admin/azure_admin.ps1"],
+  "dependencies": ["modules/gc_graph_connect.ps1"],
+  "config_requirements": [
+    {
+      "key": "GC_AZURE_TENANT_ID",
+      "secret": false,
+      "description": "Azure tenant ID (GUID). Optional if connecting interactively via connect_tenant."
+    },
+    {
+      "key": "GC_AZURE_CLIENT_ID",
+      "secret": false,
+      "description": "Service principal / app registration client ID."
+    },
+    {
+      "key": "GC_AZURE_CLIENT_SECRET",
+      "secret": true,
+      "description": "Service principal client secret. Keep this secret — it grants access to your Entra ID tenant."
+    }
+  ],
+  "actions": [
+    {
+      "name": "az_connect_tenant",
+      "operation": "connect_tenant",
+      "description": "Open an interactive browser session to authenticate with Microsoft Graph. Use this once to establish a delegated session (e.g. when service principal credentials are not configured). NOTE: session does not persist across tool calls — prefer configuring a service principal profile.",
+      "interactive": true,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "tenant_id",
+          "ps_name": "TenantId",
+          "type": "string",
+          "description": "Optional Azure tenant ID to target a specific tenant.",
+          "required": false
+        },
+        {
+          "name": "scopes",
+          "ps_name": "Scopes",
+          "type": "string",
+          "description": "Comma-separated Graph permission scopes. Defaults to User.ReadWrite.All, Group.ReadWrite.All, Directory.Read.All.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_get_user",
+      "operation": "get_user",
+      "description": "Retrieve a single Entra ID user by their user ID or user principal name.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "user_id",
+          "ps_name": "UserId",
+          "type": "string",
+          "description": "The user's object ID (GUID) or user principal name (email).",
+          "required": true
+        },
+        {
+          "name": "select_properties",
+          "ps_name": "SelectProperties",
+          "type": "string",
+          "description": "Comma-separated list of properties to return. Defaults to id, displayName, userPrincipalName, accountEnabled, mail, jobTitle, department.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_list_users",
+      "operation": "list_users",
+      "description": "List Entra ID users, optionally filtering by display name or UPN prefix.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "search",
+          "ps_name": "Search",
+          "type": "string",
+          "description": "Optional prefix to filter users by displayName or userPrincipalName.",
+          "required": false
+        },
+        {
+          "name": "top",
+          "ps_name": "Top",
+          "type": "integer",
+          "description": "Maximum number of users to return. Defaults to 25.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_create_user",
+      "operation": "create_user",
+      "description": "Create a new Entra ID user with a temporary password.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "display_name",
+          "ps_name": "DisplayName",
+          "type": "string",
+          "description": "Full display name for the new user.",
+          "required": true
+        },
+        {
+          "name": "user_principal_name",
+          "ps_name": "UserPrincipalName",
+          "type": "string",
+          "description": "Login name, usually in the form user@domain.com.",
+          "required": true
+        },
+        {
+          "name": "mail_nickname",
+          "ps_name": "MailNickname",
+          "type": "string",
+          "description": "Mail alias / nickname (the part before the @ in the UPN).",
+          "required": true
+        },
+        {
+          "name": "temporary_password",
+          "ps_name": "TemporaryPassword",
+          "type": "string",
+          "description": "Temporary password. User will be prompted to change it on first sign-in by default.",
+          "required": true
+        },
+        {
+          "name": "account_enabled",
+          "ps_name": "AccountEnabled",
+          "type": "string",
+          "description": "Whether the account is enabled. Accepts 'true' or 'false'. Defaults to true.",
+          "required": false
+        },
+        {
+          "name": "force_change_password_next_sign_in",
+          "ps_name": "ForceChangePasswordNextSignIn",
+          "type": "string",
+          "description": "Whether to force a password change on first sign-in. Accepts 'true' or 'false'. Defaults to true.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_update_user",
+      "operation": "update_user",
+      "description": "Update one or more profile fields on an existing Entra ID user.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "user_id",
+          "ps_name": "UserId",
+          "type": "string",
+          "description": "The user's object ID or user principal name.",
+          "required": true
+        },
+        { "name": "display_name",    "ps_name": "DisplayName",    "type": "string", "description": "New display name.",        "required": false },
+        { "name": "job_title",       "ps_name": "JobTitle",       "type": "string", "description": "Job title.",             "required": false },
+        { "name": "department",      "ps_name": "Department",     "type": "string", "description": "Department.",            "required": false },
+        { "name": "mobile_phone",    "ps_name": "MobilePhone",    "type": "string", "description": "Mobile phone number.",   "required": false },
+        { "name": "office_location", "ps_name": "OfficeLocation", "type": "string", "description": "Office location.",       "required": false },
+        { "name": "account_enabled", "ps_name": "AccountEnabled", "type": "string", "description": "Enable or disable the account ('true'/'false').", "required": false }
+      ]
+    },
+    {
+      "name": "az_disable_user",
+      "operation": "disable_user",
+      "description": "Disable an Entra ID user account. The account is not deleted and can be re-enabled.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "user_id",
+          "ps_name": "UserId",
+          "type": "string",
+          "description": "The user's object ID or user principal name.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "az_delete_user",
+      "operation": "delete_user",
+      "description": "Permanently delete an Entra ID user. This action is destructive and requires approval.",
+      "interactive": false,
+      "requires_approval": true,
+      "parameters": [
+        {
+          "name": "user_id",
+          "ps_name": "UserId",
+          "type": "string",
+          "description": "The user's object ID or user principal name.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "az_get_group",
+      "operation": "get_group",
+      "description": "Retrieve an Entra ID group by its object ID or display name prefix.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "group_id_or_name",
+          "ps_name": "GroupIdOrName",
+          "type": "string",
+          "description": "The group's object ID (GUID) or display name prefix.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "az_list_groups",
+      "operation": "list_groups",
+      "description": "List Entra ID groups, optionally filtering by display name prefix.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "search",
+          "ps_name": "Search",
+          "type": "string",
+          "description": "Optional prefix to filter groups by displayName.",
+          "required": false
+        },
+        {
+          "name": "top",
+          "ps_name": "Top",
+          "type": "integer",
+          "description": "Maximum number of groups to return. Defaults to 25.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_create_security_group",
+      "operation": "create_security_group",
+      "description": "Create a new Entra ID security group.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "display_name",
+          "ps_name": "DisplayName",
+          "type": "string",
+          "description": "Display name for the new group.",
+          "required": true
+        },
+        {
+          "name": "mail_nickname",
+          "ps_name": "MailNickname",
+          "type": "string",
+          "description": "Mail alias for the group (no spaces).",
+          "required": true
+        },
+        {
+          "name": "description",
+          "ps_name": "Description",
+          "type": "string",
+          "description": "Optional description for the group.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_add_group_member",
+      "operation": "add_group_member",
+      "description": "Add a user or object to an Entra ID group.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "group_id",
+          "ps_name": "GroupId",
+          "type": "string",
+          "description": "The group's object ID (GUID).",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "ps_name": "MemberId",
+          "type": "string",
+          "description": "The object ID of the user or object to add.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "az_remove_group_member",
+      "operation": "remove_group_member",
+      "description": "Remove a member from an Entra ID group.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "group_id",
+          "ps_name": "GroupId",
+          "type": "string",
+          "description": "The group's object ID (GUID).",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "ps_name": "MemberId",
+          "type": "string",
+          "description": "The object ID of the member to remove.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "az_list_group_members",
+      "operation": "list_group_members",
+      "description": "List all members of an Entra ID group.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "group_id",
+          "ps_name": "GroupId",
+          "type": "string",
+          "description": "The group's object ID (GUID).",
+          "required": true
+        },
+        {
+          "name": "top",
+          "ps_name": "Top",
+          "type": "integer",
+          "description": "Maximum number of members to return. Defaults to 100.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "az_export_users_csv",
+      "operation": "export_users_csv",
+      "description": "Export all Entra ID users to a CSV file at the specified output path.",
+      "interactive": false,
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "output_path",
+          "ps_name": "OutputPath",
+          "type": "string",
+          "description": "Full file path for the output CSV file.",
+          "required": true
+        },
+        {
+          "name": "top",
+          "ps_name": "Top",
+          "type": "integer",
+          "description": "Maximum number of users to export. Defaults to 999.",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

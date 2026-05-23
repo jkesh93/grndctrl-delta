@@ -104,10 +104,6 @@
         {
           "key": "GC_AZURE_CLIENT_SECRET",
           "description": "The client secret of the service principal used for authentication."
-        },
-        {
-          "key": "GC_AZURE_CLIENT_CERTIFICATE_PATH",
-          "description": "Path to the certificate used for service principal authentication."
         }
       ]
     }

@@ -1,0 +1,76 @@
+{
+  "actions": [
+    {
+      "name": "configure_sites_selected_access",
+      "description": "Grant a target Entra app registration Read, Write, Manage, or FullControl access to a specified SharePoint Online site through an interactive PnP.PowerShell admin sign-in. Call this when configuring least-privilege selected-site access for an app that already has Graph Sites.Selected application permission and admin consent.",
+      "requires_approval": false,
+      "parameters": [
+        {
+          "name": "site_url",
+          "ps_name": "SiteUrl",
+          "type": "string",
+          "description": "The full SharePoint Online site URL to grant access to, for example https://contoso.sharepoint.com/sites/Finance.",
+          "required": false
+        },
+        {
+          "name": "pn_pclient_id",
+          "ps_name": "PnPClientId",
+          "type": "string",
+          "description": "The client ID of the PnP.PowerShell interactive login app registration used for the delegated admin sign-in.",
+          "required": false
+        },
+        {
+          "name": "app_id",
+          "ps_name": "AppId",
+          "type": "string",
+          "description": "The application/client ID of the target Entra app registration that should receive Sites.Selected permission on the site.",
+          "required": false
+        },
+        {
+          "name": "display_name",
+          "ps_name": "DisplayName",
+          "type": "string",
+          "description": "The display name to use for the target app permission entry on the selected SharePoint site.",
+          "required": false
+        },
+        {
+          "name": "permission",
+          "ps_name": "Permission",
+          "type": "string",
+          "description": "The selected-site permission level to grant to the target app. Supported values are Read, Write, Manage, and FullControl.",
+          "required": false
+        },
+        {
+          "name": "install_module_if_missing",
+          "ps_name": "InstallModuleIfMissing",
+          "type": "string",
+          "description": "Whether to install the PnP.PowerShell module for the current user if it is missing. Accepts true or false; defaults to true.",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "config_requirements": [
+    {
+      "key": "GC_AZURE_TENANT_ID",
+      "description": "The ID of the Azure AD tenant to connect to.",
+      "secret": false
+    },
+    {
+      "key": "GC_AZURE_CLIENT_ID",
+      "description": "The client ID of the service principal used for authentication.",
+      "secret": false
+    },
+    {
+      "key": "GC_AZURE_CLIENT_SECRET",
+      "description": "The client secret of the service principal used for authentication.",
+      "secret": true
+    },
+    {
+      "key": "GC_AZURE_CLIENT_CERTIFICATE_PATH",
+      "description": "Path to the certificate used for service principal authentication.",
+      "secret": false
+    }
+  ],
+  "dependencies": []
+}
